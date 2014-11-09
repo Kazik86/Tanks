@@ -43,8 +43,9 @@ int main (int argc, char** argv)
     return 1;
   const Uint8* keyState = SDL_GetKeyboardState (NULL);
   LTexture* tankTexture = graphics.loadTexture ("imgs/Tank.png", NULL);
-  Tank tank((void*)tankTexture->getTextureData (),TANK_SIZE_X,TANK_SIZE_Y, 100, 300);
-  Tank tank2((void*)tankTexture->getTextureData (),TANK_SIZE_X,TANK_SIZE_Y, 700, 300);
+  SDL_Rect world = {0,0,screen_width,screen_height};
+  Tank tank(tankTexture->getTextureData (),TANK_SIZE_X,TANK_SIZE_Y, 100, 300, world);
+  Tank tank2(tankTexture->getTextureData (),TANK_SIZE_X,TANK_SIZE_Y, 700, 300, world);
   graphics.clear ();
   graphics.putRotatedTextureNSV (tank.getPosX (), tank.getPosY (), tank.getWidth (),
       tank.getHeight (), tank.getAngle (), (SDL_Texture*)tank.getTexture ());
@@ -94,19 +95,17 @@ int main (int argc, char** argv)
     {
       tank2.moveBackward ();
     }
-    //velFlag = true;
-    //rotateSpeedFlag = true;
-    /*
-     *tank.rotateClockwise (rotateSpeed);
-     *tank.move (vel);
-     */
     tank.update ();
     tank2.update ();
     graphics.clear ();
-    graphics.putRotatedTextureNSV (tank.getPosX (), tank.getPosY (), tank.getWidth (),
-        tank.getHeight (), tank.getAngle (), (SDL_Texture*)tank.getTexture ());
-  graphics.putRotatedTextureNSV (tank2.getPosX (), tank2.getPosY (), tank2.getWidth (),
-      tank2.getHeight (), tank2.getAngle (), (SDL_Texture*)tank2.getTexture ());
+    tank.drawTank (graphics.getRenderer ());
+    tank2.drawTank (graphics.getRenderer ());
+    /*
+     *graphics.putRotatedTextureNSV (tank.getPosX (), tank.getPosY (), tank.getWidth (),
+     *    tank.getHeight (), tank.getAngle (), (SDL_Texture*)tank.getTexture ());
+     *graphics.putRotatedTextureNSV (tank2.getPosX (), tank2.getPosY (), tank2.getWidth (),
+     *    tank2.getHeight (), tank2.getAngle (), (SDL_Texture*)tank2.getTexture ());
+     */
     graphics.show ();
   }
 

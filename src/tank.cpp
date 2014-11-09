@@ -1,20 +1,20 @@
 #include "tank.hpp"
 #include <cmath>
-#include <SDL2/SDL_rect.h>
 
-Tank::Tank (void* texture, int w, int h, int x, int y)
+Tank::Tank (SDL_Texture* texture, int w, int h, int x, int y, SDL_Rect& wallRect)
 {
   this->texture = texture;
-  this->w = w;
-  this->h = h;
-  this->x = x;
-  this->y = y;
+  this->tankRect.w = w;
+  this->tankRect.h = h;
+  this->tankRect.x = x;
+  this->tankRect.y = y;
   this->xPres = (int)x;
   this->yPres = (int)y;
   this->velocity = 0;
   this->velocityFlag = true;
   this->rotateSpeed = 0;
   this->rotateSpeedFlag = true;
+  this->wallRect = wallRect;
 }
 
 Tank::~Tank ()
@@ -36,7 +36,7 @@ int Tank::getHeight ()
   return this->h;
 }
 
-void* Tank::getTexture ()
+SDL_Texture* Tank::getTexture ()
 {
   return this->texture;
 }
@@ -84,34 +84,30 @@ void Tank::update (void)
   this->velocityFlag = true;
   int x ,y;
   double xPres, yPres;
-  x = this->x;
-  y = this->y;
+  x = this->tankRect.x;
+  y = this->tankRect.y;
   xPres = this->xPres;
   yPres = this->yPres;
 
-  SDL_Rect tankRect;
-  SDL_Rect wallRect = {0,0,800,600};
   SDL_Rect commonRect;
 
   this->xPres += sin(this->angle*D2R)*velocity*0.05;
-  this->x = (int)this->xPres;
-  tankRect = {this->x, this->y, this->w, this->h};
+  this->tankRect.x = (int)this->xPres;
 
-  SDL_IntersectRect (&tankRect, &wallRect, &commonRect);
+  SDL_IntersectRect (&tankRect, &this->wallRect, &commonRect);
   if (SDL_RectEquals (&tankRect, &commonRect) == SDL_FALSE)
   {
-    this->x = x;
+    this->tankRect.x = x;
     this->xPres = xPres;
   }
 
   this->yPres -= cos(this->angle*D2R)*velocity*0.05;
-  this->y = (int)this->yPres;
-  tankRect = {this->x, this->y, this->w, this->h};
+  this->tankRect.y = (int)this->yPres;
 
-  SDL_IntersectRect (&tankRect, &wallRect, &commonRect);
+  SDL_IntersectRect (&this->tankRect, &this->wallRect, &commonRect);
   if (SDL_RectEquals (&tankRect, &commonRect) == SDL_FALSE)
   {
-    this->y = y;
+    this->tankRect.y = y;
     this->yPres = yPres;
   }
 }
@@ -161,4 +157,10 @@ int Tank::getPosX ()
 int Tank::getPosY ()
 {
   return this->y;
+}
+
+void Tank::drawTank (SDL_Renderer* renderer)
+{
+  SDL_RenderCopyEx (renderer, this->texture, NULL, &this->tankRect,
+      this->angle, NULL, SDL_FLIP_NONE);
 }

@@ -19,6 +19,7 @@ class GraphicsViewer
     bool putRotatedTextureNSV (int, int, double, SDL_Texture*);
     bool putRotatedTextureNSV (int, int, int, int, double, SDL_Texture*);
     void writeText (const char* text, LTexture* texture);
+    SDL_Renderer* getRenderer (void);
     void show (void);
     void clear (void);
   private:

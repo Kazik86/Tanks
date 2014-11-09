@@ -188,3 +188,8 @@ void GraphicsViewer::show (void)
 {
   SDL_RenderPresent( gRenderer );
 }
+
+SDL_Renderer* GraphicsViewer::getRenderer (void)
+{
+  return this->gRenderer;
+}

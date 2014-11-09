@@ -1,12 +1,13 @@
+#include <SDL2/SDL.h>
 class Tank
 {
   public:
-    Tank (void*, int, int, int, int);
+    Tank (SDL_Texture*, int, int, int, int, SDL_Rect&);
     ~Tank ();
     double getAngle ();
     int getWidth ();
     int getHeight ();
-    void* getTexture ();
+    SDL_Texture* getTexture ();
     void rotateClockwise ();
     void rotateCounterClockwise ();
     void setAngle (double);
@@ -16,14 +17,17 @@ class Tank
     void update (void);
     void moveForward (void);
     void moveBackward (void);
+    void drawTank (SDL_Renderer*);
   private:
     double angle;
     int w, h;
     int x, y;
     double xPres, yPres;
-    void* texture;
+    SDL_Texture* texture;
     int rotateSpeed;
     bool rotateSpeedFlag;
     int velocity;
     bool velocityFlag;
+    SDL_Rect wallRect;
+    SDL_Rect tankRect;
 };
