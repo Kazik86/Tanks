@@ -34,20 +34,22 @@ int main (int argc, char** argv)
 {
   GraphicsViewer graphics;
   SDL_Event e;
-  int vel = 0;
-  int rotateSpeed = 0;
-  bool rotateSpeedFlag = true;
-  bool velFlag = true;
+  //int vel = 0;
+  //int rotateSpeed = 0;
+  //bool rotateSpeedFlag = true;
+  //bool velFlag = true;
   bool quit;
   if (!graphics.init (screen_width, screen_height))
     return 1;
   const Uint8* keyState = SDL_GetKeyboardState (NULL);
   LTexture* tankTexture = graphics.loadTexture ("imgs/Tank.png", NULL);
-  Tank tank((void*)tankTexture->getTextureData (),TANK_SIZE_X,TANK_SIZE_Y, 400, 300);
+  Tank tank((void*)tankTexture->getTextureData (),TANK_SIZE_X,TANK_SIZE_Y, 100, 300);
+  Tank tank2((void*)tankTexture->getTextureData (),TANK_SIZE_X,TANK_SIZE_Y, 700, 300);
   graphics.clear ();
-  graphics.clear ();
-  graphics.putRotatedTextureNSV (400, 300, tank.getWidth (), tank.getHeight (),
-      0.0, (SDL_Texture*)tank.getTexture ());
+  graphics.putRotatedTextureNSV (tank.getPosX (), tank.getPosY (), tank.getWidth (),
+      tank.getHeight (), tank.getAngle (), (SDL_Texture*)tank.getTexture ());
+  graphics.putRotatedTextureNSV (tank2.getPosX (), tank2.getPosY (), tank2.getWidth (),
+      tank2.getHeight (), tank2.getAngle (), (SDL_Texture*)tank2.getTexture ());
   graphics.show ();
   while (quit == false)
   {
@@ -61,55 +63,50 @@ int main (int argc, char** argv)
     }
     if (keyState [SDL_SCANCODE_RIGHT])
     {
-      rotateSpeed += 4;
-      if (rotateSpeed > 60)
-        rotateSpeed = 60;
-      rotateSpeedFlag = false;
+      tank.rotateCounterClockwise ();
     }
     if (keyState [SDL_SCANCODE_LEFT])
     {
-      rotateSpeed -= 4;
-      if (rotateSpeed < -60)
-        rotateSpeed = -60;
-      rotateSpeedFlag = false;
-      //tank.rotateCounterClockwise (3.0);
+      tank.rotateClockwise ();
     }
     if (keyState [SDL_SCANCODE_UP])
     {
-      vel += 2;
-      if(vel > 60)
-        vel = 60;
-      velFlag = false;
+      tank.moveForward ();
     }
     if (keyState [SDL_SCANCODE_DOWN])
     {
-      vel -= 2;
-      if(vel < -60)
-        vel = -60;
-      velFlag = false;
+      tank.moveBackward ();
     }
-    if (rotateSpeedFlag)
+
+    if (keyState [SDL_SCANCODE_L])
     {
-      if (rotateSpeed > 0)
-        rotateSpeed -=4;
-      else if (rotateSpeed < 0)
-        rotateSpeed +=4;
+      tank2.rotateCounterClockwise ();
     }
-    if (velFlag)
+    if (keyState [SDL_SCANCODE_J])
     {
-      if (vel > 0)
-        vel -=2;
-      if (vel < 0)
-        vel +=2;
+      tank2.rotateClockwise ();
     }
-    velFlag = true;
-    rotateSpeedFlag = true;
-    tank.move (vel);
-    tank.rotateClockwise (rotateSpeed);
-    cout << rotateSpeed << endl;
+    if (keyState [SDL_SCANCODE_I])
+    {
+      tank2.moveForward ();
+    }
+    if (keyState [SDL_SCANCODE_K])
+    {
+      tank2.moveBackward ();
+    }
+    //velFlag = true;
+    //rotateSpeedFlag = true;
+    /*
+     *tank.rotateClockwise (rotateSpeed);
+     *tank.move (vel);
+     */
+    tank.update ();
+    tank2.update ();
     graphics.clear ();
     graphics.putRotatedTextureNSV (tank.getPosX (), tank.getPosY (), tank.getWidth (),
         tank.getHeight (), tank.getAngle (), (SDL_Texture*)tank.getTexture ());
+  graphics.putRotatedTextureNSV (tank2.getPosX (), tank2.getPosY (), tank2.getWidth (),
+      tank2.getHeight (), tank2.getAngle (), (SDL_Texture*)tank2.getTexture ());
     graphics.show ();
   }
 

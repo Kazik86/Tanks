@@ -159,8 +159,8 @@ bool GraphicsViewer::putRotatedTextureNSV (int x, int y, double angle,
   SDL_Rect renderQuad;
   int w,h;
   SDL_QueryTexture (texture, NULL, NULL, &w, &h);
-  renderQuad.x = x - w/2;
-  renderQuad.y = y - h/2;
+  renderQuad.x = x;
+  renderQuad.y = y;
   renderQuad.w = w;
   renderQuad.h = h;
   SDL_RenderCopyEx (gRenderer, texture, NULL, &renderQuad, angle, NULL, SDL_FLIP_NONE);
@@ -171,8 +171,8 @@ bool GraphicsViewer::putRotatedTextureNSV (int x, int y, int w, int h, double an
     SDL_Texture* texture)
 {
   SDL_Rect renderQuad;
-  renderQuad.x = x - w/2;
-  renderQuad.y = y - h/2;
+  renderQuad.x = x;
+  renderQuad.y = y;
   renderQuad.w = w;
   renderQuad.h = h;
   SDL_RenderCopyEx (gRenderer, texture, NULL, &renderQuad, angle, NULL, SDL_FLIP_NONE);
