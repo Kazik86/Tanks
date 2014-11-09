@@ -1,28 +1,117 @@
+#include <cstring>
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <stdexcept>
+#include <vector>
+#include "graphicsViewer.hpp"
+#include <SDL2/SDL_thread.h>
 #include <SDL2/SDL.h>
+#include "tank.hpp"
 
-#define TANKS_SDL_INIT (SDL_INIT_VIDEO)
+using namespace std;
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+
+/*
+ *
+ *SDL config
+ *
+ */
+
+extern const int screen_width;
+extern const int screen_height;
+
+const int screen_width = 800;
+const int screen_height = 600;
+
+#define TANK_SIZE_X 30
+#define TANK_SIZE_Y TANK_SIZE_X
+
+SDL_sem* gDataLock = NULL;
+SDL_mutex* gMutexLock = NULL;
 
 int main (int argc, char** argv)
 {
-  SDL_Window* TanksWindow = NULL;
-  
-  if (SDL_Init (TANKS_SDL_INIT) < 0)
-  {
-    printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
+  GraphicsViewer graphics;
+  SDL_Event e;
+  int vel = 0;
+  int rotateSpeed = 0;
+  bool rotateSpeedFlag = true;
+  bool velFlag = true;
+  bool quit;
+  if (!graphics.init (screen_width, screen_height))
     return 1;
-  }
-  TanksWindow = SDL_CreateWindow ("Tanks", SDL_WINDOWPOS_UNDEFINED,
-      SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-  if (TanksWindow == NULL)
+  const Uint8* keyState = SDL_GetKeyboardState (NULL);
+  LTexture* tankTexture = graphics.loadTexture ("imgs/Tank.png", NULL);
+  Tank tank((void*)tankTexture->getTextureData (),TANK_SIZE_X,TANK_SIZE_Y, 400, 300);
+  graphics.clear ();
+  graphics.clear ();
+  graphics.putRotatedTextureNSV (400, 300, tank.getWidth (), tank.getHeight (),
+      0.0, (SDL_Texture*)tank.getTexture ());
+  graphics.show ();
+  while (quit == false)
   {
-      printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
-      return 2;
+    while (SDL_PollEvent (&e) != 0)
+    {
+      if (e.type == SDL_QUIT)
+      {
+        quit = true;
+        continue;
+      }
+    }
+    if (keyState [SDL_SCANCODE_RIGHT])
+    {
+      rotateSpeed += 4;
+      if (rotateSpeed > 60)
+        rotateSpeed = 60;
+      rotateSpeedFlag = false;
+    }
+    if (keyState [SDL_SCANCODE_LEFT])
+    {
+      rotateSpeed -= 4;
+      if (rotateSpeed < -60)
+        rotateSpeed = -60;
+      rotateSpeedFlag = false;
+      //tank.rotateCounterClockwise (3.0);
+    }
+    if (keyState [SDL_SCANCODE_UP])
+    {
+      vel += 2;
+      if(vel > 60)
+        vel = 60;
+      velFlag = false;
+    }
+    if (keyState [SDL_SCANCODE_DOWN])
+    {
+      vel -= 2;
+      if(vel < -60)
+        vel = -60;
+      velFlag = false;
+    }
+    if (rotateSpeedFlag)
+    {
+      if (rotateSpeed > 0)
+        rotateSpeed -=4;
+      else if (rotateSpeed < 0)
+        rotateSpeed +=4;
+    }
+    if (velFlag)
+    {
+      if (vel > 0)
+        vel -=2;
+      if (vel < 0)
+        vel +=2;
+    }
+    velFlag = true;
+    rotateSpeedFlag = true;
+    tank.move (vel);
+    tank.rotateClockwise (rotateSpeed);
+    cout << rotateSpeed << endl;
+    graphics.clear ();
+    graphics.putRotatedTextureNSV (tank.getPosX (), tank.getPosY (), tank.getWidth (),
+        tank.getHeight (), tank.getAngle (), (SDL_Texture*)tank.getTexture ());
+    graphics.show ();
   }
-  
-  TanksMenu* TanksMenu_Instance = new TanksMenu (TanksWindow);
-  TanksMenu_Instance->run();
+
+  return 0;
 }
