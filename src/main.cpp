@@ -100,12 +100,6 @@ int main (int argc, char** argv)
     graphics.clear ();
     tank.drawTank (graphics.getRenderer ());
     tank2.drawTank (graphics.getRenderer ());
-    /*
-     *graphics.putRotatedTextureNSV (tank.getPosX (), tank.getPosY (), tank.getWidth (),
-     *    tank.getHeight (), tank.getAngle (), (SDL_Texture*)tank.getTexture ());
-     *graphics.putRotatedTextureNSV (tank2.getPosX (), tank2.getPosY (), tank2.getWidth (),
-     *    tank2.getHeight (), tank2.getAngle (), (SDL_Texture*)tank2.getTexture ());
-     */
     graphics.show ();
   }
 

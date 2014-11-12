@@ -44,7 +44,7 @@ bool GraphicsViewer::init (int x, int y)
       }
       else
       {
-        SDL_SetRenderDrawColor (gRenderer, 0xFF, 0xFF, 0x00, 0x00);
+        SDL_SetRenderDrawColor (gRenderer, 0x00, 0xFF, 0x7F, 0x00);
         int imgFlags = IMG_INIT_PNG;
         if (!(IMG_Init (imgFlags) & imgFlags))
         {
